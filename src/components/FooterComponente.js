@@ -1,8 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
+import { collection, addDoc } from "firebase/firestore";
+import { db } from '../application/firebase';
+
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal);
+
 export const FooterComponente = () => {
+
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [comment, setComment] = useState('');
+
+    const reservationCollection = collection(db, "reservation")
+
+    const store = async (e) => {
+        e.preventDefault()
+        await addDoc(reservationCollection, { name: name, phone: phone, comment: comment })
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Reservacion realizada correctamente',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+
     return (
         <div className='footer'>
             <div className='nosotros'>
@@ -15,18 +41,18 @@ export const FooterComponente = () => {
                 </div>
             </div>
             <div className='formulario'>
-                <form class="col">
+                <form class="col" onSubmit={store}>
                     <div className='imputsForm'>
-                        <input class="form-control" type="text" placeholder="Nombre"/>
+                        <input class="form-control" type="text" placeholder="Nombre" value={name} onChange={e => setName(e.target.value)} required/>
                     </div>
                     <div className='imputsForm'>
-                        <input class="form-control" type="text" placeholder="Telefono"/>
+                        <input class="form-control" type="number" placeholder="Telefono" value={phone} onChange={e => setPhone(e.target.value)} required/>
                     </div>
                     <div className='imputsForm'>
-                        <input class="form-control" type="text" placeholder="Comentarios"/>
+                        <input class="form-control" type="text" placeholder="Comentarios" value={comment} onChange={e => setComment(e.target.value)} required/>
                     </div>
                     <div className='imputsForm'>
-                        <button type="submit" class="btn btn-primary mb-3">Enviar</button>
+                        <button type='submit' class="btn btn-primary mb-3">Enviar</button>
                     </div>
                 </form>
             </div>
